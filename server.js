@@ -42,20 +42,20 @@ app.post('/posts', (req, res) => {
   for (let i = 0; i < requiredFields.length; i++) { 
     const field = requiredFields[i]; 
     if (!(field in req.body)) { 
-      const message = 'Missing \`${field}` in request body';
+      const message = `Missing ${field} in request body`;
       console.error(message); 
       return res.status(400).send(message);  
     }
   }
 
-    Blogpost 
+    BlogPost 
       .create({
         title: req.body.title, 
         content: req.body.content, 
         author: req.body.author
       })
       //lower case blogPost an argument created from above? 
-      .then(blogPost => res.status(201).json(blogPost.serialize()))
+      .then((blogPost) => {res.status(201).json(blogPost.serialize())})
       .catch(err => {
         console.error(err); 
         res.status(500).json({ error: 'Something went wrong' });
@@ -83,7 +83,7 @@ app.put('/posts/:id', (req, res) => {
     .catch(err => res.status(500).json({ message: 'Something went wrong '})); 
 }); 
 
-app.delete('/:id', (req, res) => {
+app.delete('/posts/:id', (req, res) => {
   BlogPost  
     .findByIdAndRemove(req.params.id)
     .then(() => {
@@ -91,8 +91,13 @@ app.delete('/:id', (req, res) => {
       res.status(204).end(); 
     });
 });
+//error route
+app.use((error, req, res, next) => {
+  console.error('There was an error somewhere');
+  res.status(500).json({ message: 'Error Occured'})
+}); 
 
-//what is this? 
+//what is this? Bad route error
 app.use('*', function (req, res) { 
   res.status(404).json({ message: 'Not Found'}); 
 }); 
